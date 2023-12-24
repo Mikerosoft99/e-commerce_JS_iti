@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="customer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../footer.css">
+    <link rel="stylesheet" href="../nav.css">
+    <title>Shopping Cart</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="customerDashboard.html"><img width="100px" height="70px" src="../images/logo.png" alt="Logo"></a>
+        <ul>
+            <li><a href="customerDashboard.html">Home</a></li>
+            <li><a class="active" href="#"><img src="../images/cart-black-icon.svg" width="25px" height="25px"
+                        alt="ShoppingCart"></a></li>
+            <li><a href="wishlist.html" id="wishlist">Wishlist <i class="fa-solid fa-heart"></i></a></li>
+            <li><a href="previousOrder.html">My Orders</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </div>
+
+    <div id="cartItems"></div>
+    <br>
+    <div id="checkoutSec">
+        <p id="checkoutTotal">Total Price: <span id="totalPrice"></span>$</p>
+        <button id="checkoutButton" onclick="goToCheckout()">Go to Checkout</button>
+    </div>
+    <div id="emptycart">
+        <img width="40%" src="../images/emptyCart.svg" alt="">
+        <div id="emptyMessage">
+            <p>Your Shopping Cart is Empty!</p>
+            <a href="customerDashboard.html" class="shopping-link">Start Shopping Now</a>
+        </div>
+    </div>
+
+    <footer>
+        <div id="footer-content">
+            <div class="footer-section">
+                <h4 class="footer">JavaScript E-Commerce</h4>
+                <p>Shop with confidence | Secure Payment | Fast Shipping</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer">Stay Connected</h4>
+                <p>
+                    <a href="https://www.facebook.com"><i class="fa-brands fa-facebook fa-xl"></i></a> &#160
+                    <a href="https://www.x.com"><i class="fa-brands fa-twitter fa-xl"></i></a> &#160
+                    <a href="https://www.youtube.com"><i class="fa-brands fa-youtube fa-xl"></i></a> &#160
+                </p>
+            </div>
+        </div>
+
+        <div id="footer-bottom">
+            <p>&copy; 2023 ITI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logoutLink');
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace('../login-register/login.html');
+                history.pushState(null, null, '../login-register/login.html');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            displayCartItems();
+            checkCartIfEmpty();
+        });
+
+        function displayCartItems() {
+            var cartItemsContainer = document.getElementById('cartItems');
+            var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            cartItemsContainer.innerHTML = '';
+
+            cartItems.forEach(function (item) {
+                cartItemsContainer.innerHTML += `
+            <div class="cart-item">
+                <div class="cart-item-details">
+                    <img src="${item.image}" alt="${item.name}" class="product-image">
+                    <p>${item.name}</p>
+                    <div class="quantity-price">
+                        <span>Quantity: ${item.quantity}</span>
+                        <br>
+                        <span>Price: ${(item.price * item.quantity).toFixed(2)}$</span>
+                    </div>
+                </div>
+                <button id='Remove-btn' onclick="removeFromCart(${item.id})">Remove</button>
+            </div>`;
+            });
+        }
+
+
+        // function calculateTotalPriceFromCart() {
+        //     var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        //     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+        // }
+
+        function calculateTotalPriceFromCart() {
+            var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            var totalPrice = 0;
+
+            for (var i = 0; i < cartItems.length; i++) {
+                var item = cartItems[i];
+                totalPrice += item.price * item.quantity;
+            }
+            return totalPrice;
+        };
+
+        function checkCartIfEmpty() {
+            var totalPriceElement = document.getElementById('totalPrice');
+            var total = calculateTotalPriceFromCart();
+            totalPriceElement.textContent = total.toFixed(2);
+
+            var checkoutSection = document.getElementById('checkoutButton');
+            var checkoutTotal = document.getElementById('checkoutTotal');
+            var emptyCartSec = document.getElementById('emptycart');
+
+            if (total > 0) {
+
+                emptyCartSec.style.display = 'none';
+                checkoutSection.style.display = 'inline';
+                checkoutTotal.style.display = 'inline';
+            } else {
+                emptyCartSec.style.display = 'block';
+                checkoutSection.style.display = 'none';
+                checkoutTotal.style.display = 'none';
+            }
+        };
+
+        function removeFromCartInLocalStorage(productId) {
+            var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+            var index = cartItems.findIndex(item => item.id === productId);
+
+            if (index !== -1) {
+                var removedProduct = cartItems[index];
+
+                // Check if the quantity is greater than one before prompting
+                if (removedProduct.quantity > 1) {
+                    // Ask for the quantity to remove
+                    var quantityToRemove = prompt(`Enter the quantity to remove:`);
+
+                    if (quantityToRemove === null || quantityToRemove === "") { // user entered no value or clicked cancel
+                        return;
+                    }
+
+                    // Parse the input to ensure it's a valid number
+                    quantityToRemove = parseInt(quantityToRemove);
+
+                    if (!isNaN(quantityToRemove) && quantityToRemove > 0 && quantityToRemove <= removedProduct.quantity) {
+                        // Reduce the quantity by the specified amount
+                        removedProduct.quantity -= quantityToRemove;
+                        if (removedProduct.quantity === 0) {
+                            cartItems.splice(index, 1);
+                        }
+                    } else {
+                        alert(`Invalid quantity. Please enter a valid number between 1 and ${removedProduct.quantity}.`);
+                        return;
+                    }
+
+                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                } else {
+                    // If the quantity is one, remove the item without prompting
+                    cartItems.splice(index, 1);
+                    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                }
+            }
+        };
+
+        function removeFromCart(productId) {
+            removeFromCartInLocalStorage(productId);
+            displayCartItems();
+            checkCartIfEmpty();
+        }
+
+        function goToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+    </script>
+</body>
+
+</html>

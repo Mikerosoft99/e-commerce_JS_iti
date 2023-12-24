@@ -1,0 +1,69 @@
+body{
+  background-color: #E1D3C6;
+  background-image: url(../images/sign-in.jpeg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  padding: 0;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.form-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #CD8D7A;
+  color: #fff;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-container label{
+  font-weight: bold;
+}
+
+.form-container input,
+.form-container select {
+  background-color: #EAECCC;
+  width: 100%;
+  padding: 10px 5px;
+  border: none;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-container input:focus {
+  background-color: #DBCC95;
+}
+
+.form-container button {
+  width: 100%;
+  margin: 10px 0;
+  padding: 15px;
+  font-size: large;
+  font-weight: bold;
+  color: #c7502c;
+  background-color: #C3E2C2;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease-out;
+}
+
+.form-container button:hover {
+  background-color: #7dbd7b;
+  transition: 0.3s ease-in;
+}
+
+.error {
+  color: red;
+  margin: 5px 1px;
+}
+
+.form-container a{
+  text-decoration: none;
+  padding: 5px;
+  color:  #fff;
+  font-size: large;
+  font-weight: bold;
+}

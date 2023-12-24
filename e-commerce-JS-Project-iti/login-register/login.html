@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="icon" href="../images/logo.png" type="image/x-icon"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="login-register-style.css">
+</head>
+
+<body>
+  <div class="form-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" name="email" required>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Login</button>
+    </form>
+    <a href="register.html">Create New Account</a>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var enteredEmail = document.getElementById("email").value;
+      var enteredPassword = document.getElementById("password").value;
+
+      var users = JSON.parse(localStorage.getItem("users")) || [];
+
+      var user = users.find(function (u) {
+        return u.email === enteredEmail && u.password === enteredPassword;
+      });
+
+      if (user) {
+        alert(`Log in Successful! Welcome ${user.username} :)`);
+        if (user.userType === "admin") {
+          window.location.href = "../admin/adminDashboard.html";
+        } else {
+          window.location.href = "../customer/customerDashboard.html";
+        }
+      } else {
+        alert("Invalid username or password. Please try again.");
+      }
+    });
+  </script>
+</body>
+
+</html>

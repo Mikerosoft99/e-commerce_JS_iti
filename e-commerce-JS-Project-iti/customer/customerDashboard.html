@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="customer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../nav.css">
+    <link rel="stylesheet" href="../footer.css">
+    <title>Discover the joy of shopping</title>
+    <style>
+        .feedback-message {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeOut 2s ease-in-out;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="customerDashboard.html"><img width="100px" height="70px" src="../images/logo.png" alt="Logo"></a>
+        <ul>
+            <li><a class="active" href="#">Home</a></li>
+            <li><a href="shoppingCart.html"><img src="../images/cart-black-icon.svg" width="25px" height="25px"
+                        alt="ShoppingCart"></a></li>
+            <li><a href="wishlist.html" id="wishlist">Wishlist <i class="fa-solid fa-heart"></i></a></li>
+            <li><a href="previousOrder.html">My Orders</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </div>
+
+    <section id="hero">
+        <div class="home1">
+            <h1>Discover the joy of online shopping</h1>
+        </div>
+        <div class="home2">
+        </div>
+    </section>
+
+    <section id="feature">
+        <div class="fe-box">
+            <img src="../images/online shopping.jpg" style="width: 100; height: 100px; ">
+            <h6>Online Shopping</h6>
+        </div>
+        <div class="fe-box">
+            <img src="../images/save money.jpg" style="width: 100; height: 100px; ">
+            <h6>Save money</h6>
+        </div>
+        <div class="fe-box">
+            <img src="../images/free shopping.jpg" style="width: 100; height: 100px; ">
+            <h6>Free Shopping</h6>
+        </div>
+        <div class="fe-box">
+            <img src="../images/happy sell.jpg" style="width: 100; height: 100px; ">
+            <h6> Happy sell</h6>
+        </div>
+        <div class="fe-box" style="margin-right: 25px;">
+            <img src="../images/24-7 support.jpg" style="width: 100; height: 100px; ">
+            <h6>24/7 Customer Support</h6>
+        </div>
+    </section>
+
+
+    <div id="inputss">
+        <input type="text" id="search" onkeyup="searchData(this.value)" placeholder="Search by Name">
+        <input type="text" id="searchp" onkeyup="searchData(this.value)" style="display: none;">
+    </div>
+
+    <div id="searchBlock">
+        <button class="search-btn" onclick="getSearchMood(this.id)" id="searchName">Search by Name</button>
+        <button class="search-btn" onclick="getSearchMood(this.id)" id="searchcategory">Search by Category</button>
+        <button class="search-btn" onclick="getSearchMood(this.id)" id="searchPrice">Search by Price</button>
+    </div>
+
+    <section id="product1">
+        <div id="product-container">
+        </div>
+    </section>
+
+    <footer>
+        <div id="footer-content">
+            <div class="footer-section">
+                <h4 class="footer">JavaScript E-Commerce</h4>
+                <p>Shop with confidence | Secure Payment | Fast Shipping</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer">Stay Connected</h4>
+                <p>
+                    <a href="https://www.facebook.com"><i class="fa-brands fa-facebook fa-xl"></i></a> &#160
+                    <a href="https://www.x.com"><i class="fa-brands fa-twitter fa-xl"></i></a> &#160
+                    <a href="https://www.youtube.com"><i class="fa-brands fa-youtube fa-xl"></i></a> &#160
+                </p>
+            </div>
+        </div>
+
+        <div id="footer-bottom">
+            <p>&copy; 2023 ITI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logoutLink');
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace('../login-register/login.html');
+                history.pushState(null, null, '../login-register/login.html');
+            });
+        });
+
+        var storedProducts = localStorage.getItem('products');
+        if (storedProducts) {
+            var products = JSON.parse(storedProducts);
+            displayProducts();
+        } else {
+            fetch("../products.json")
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (products) {
+                    localStorage.setItem('products', JSON.stringify(products));
+                    displayProducts();
+                });
+        };
+
+        function displayProducts() {
+            let placeholder = document.getElementById('product-container');
+            let out = "";
+            for (let product of products) {
+                out += `<div class="pro" style="width:23%">
+                    <img src="${product.image}">
+                    <p><b>${product.name}</b></p>
+                    <p>${product.category}</p>
+                    <p>${product.price} $</p>
+                    <p>Quantity: ${product.quantity}</p>
+                    <select class="dropdown" id="quantity${product.id}" name="quantity">
+                    ${generateQuantityOptions(product.quantity)}
+                    </select>
+                    <button onclick="addToCart(${product.id}, ${product.quantity})">Add to Cart</button>
+                    <span class="wishlist-icon" onclick="toggleWishlist(${product.id})">${product.inWishlist ? '<i class="fa-solid fa-heart fa-xl"></i>' : '<i class="fa-regular fa-heart fa-xl"></i>'}</span>
+                    </div>`
+            }
+            placeholder.innerHTML = out;
+        };
+
+        var products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function generateQuantityOptions(maxQuantity) {
+            let options = '';
+            for (let i = 1; i <= maxQuantity; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+            return options;
+        }
+
+        function addToCart(productId, maxQuantity) {
+            var selectedQuantity = document.getElementById(`quantity${productId}`).value;
+
+            var selectedProduct = products.find(p => p.id === productId);
+
+            if (selectedProduct) {
+                var cartItem = {
+                    id: selectedProduct.id,
+                    image: selectedProduct.image,
+                    name: selectedProduct.name,
+                    price: selectedProduct.price,
+                    quantity: parseInt(selectedQuantity),
+                };
+
+                var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+                var existingCartItemIndex = cartItems.findIndex(item => item.id === cartItem.id);
+
+                if (existingCartItemIndex !== -1) {
+                    cartItems[existingCartItemIndex].quantity += cartItem.quantity;
+                } else {
+                    cartItems.push(cartItem);
+                }
+
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                displayFeedback('Item added to cart!');
+            }
+        }
+
+        function toggleWishlist(productId) {
+            var product = products.find(p => p.id === productId);
+            if (product) {
+                if (product.inWishlist) {
+                    removeFromWishlist(product);
+                } else {
+                    addToWishlist(product);
+                }
+                localStorage.setItem('products', JSON.stringify(products));
+                displayProducts();
+            }
+        }
+
+        function addToWishlist(product) {
+            product.inWishlist = true;
+        }
+        function removeFromWishlist(product) {
+            product.inWishlist = false;
+        }
+
+        // Search Section
+        let searchMood = 'name';
+        function getSearchMood(id) {
+            let search = document.getElementById('search')
+            let searchp = document.getElementById('searchp')
+            if (id == 'searchName') {
+                searchMood = 'name';
+                search.placeholder = 'Search by Name'
+                searchp.style = "display: none;"
+
+            } else if (id == 'searchPrice') {
+                searchMood = 'price';
+                searchp.style = "display: inline;"
+                search.placeholder = 'Price from'
+                searchp.placeholder = 'Price to'
+            }
+            else {
+                searchMood = 'category';
+                search.placeholder = 'Search by Category'
+                searchp.style = "display: none;"
+            }
+            search.focus();
+            search.value = '';
+            searchp.value = '';
+            displayProducts();
+        }
+        let placeholder = document.getElementById('product-container');
+
+        function searchData(value) {
+            let out = "";
+            for (let pro in products) {
+                if (searchMood == 'name') {
+
+                    if (products[pro].name.toLowerCase().includes(value)) {
+                        out += `<div class="pro" style="width:23%">
+                            <img src="${products[pro].image}">
+                            <p><b>${products[pro].name}</b></p>
+                            <p>${products[pro].category}</p>
+                            <p>${products[pro].price} $</p>
+                            <p>Quantity: ${products[pro].quantity}</p>
+                            <select id="quantity${products[pro].id}" name="quantity">
+                            ${generateQuantityOptions(products[pro].quantity)}
+                            </select>
+                            <button onclick="addToCart(${products[pro].id}, ${products[pro].quantity})">Add to Cart</button>
+                            <span class="wishlist-icon" onclick="toggleWishlist(${products[pro].id})">${products[pro].inWishlist ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>'}</span>
+                            </div>`
+                    }
+
+                } else if (searchMood == 'category') {
+                    if (products[pro].category.toLowerCase().includes(value)) {
+
+                        out += `<div class="pro" style="width:23%">
+                            <img src="${products[pro].image}">
+                            <p><b>${products[pro].name}</b></p>
+                            <p>${products[pro].category}</p>
+                            <p>${products[pro].price} $</p>
+                            <p>Quantity: ${products[pro].quantity}</p>
+                            <select id="quantity${products[pro].id}" name="quantity">
+                            ${generateQuantityOptions(products[pro].quantity)}
+                            </select>
+                            <button onclick="addToCart(${products[pro].id}, ${products[pro].quantity})">Add to Cart</button>
+                            <span class="wishlist-icon" onclick="toggleWishlist(${products[pro].id})">${products[pro].inWishlist ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>'}</span>
+                            </div>`
+                    }
+                }
+                else if (searchMood == 'price') {
+                    if (products[pro].price >= search.value && products[pro].price <= searchp.value) {
+
+                        out += `<div class="pro" style="width:23%">
+                            <img src="${products[pro].image}">
+                            <p><b>${products[pro].name}</b></p>
+                            <p>${products[pro].category}</p>
+                            <p>${products[pro].price} $</p>
+                            <p>Quantity: ${products[pro].quantity}</p>
+                            <select id="quantity${products[pro].id}" name="quantity">
+                            ${generateQuantityOptions(products[pro].quantity)}
+                            </select>
+                            <button onclick="addToCart(${products[pro].id}, ${products[pro].quantity})">Add to Cart</button>
+                            <span class="wishlist-icon" onclick="toggleWishlist(${products[pro].id})">${products[pro].inWishlist ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>'}</span>
+                            </div>`
+                    }
+
+                }
+            }
+            placeholder.innerHTML = out;
+        };
+
+        function displayFeedback(message) {
+            var feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-message';
+            feedbackDiv.textContent = message;
+
+            document.body.appendChild(feedbackDiv);
+
+            // Set a timeout to remove the feedback message after 1 second (adjust the duration as needed)
+            setTimeout(function () {
+                feedbackDiv.parentNode.removeChild(feedbackDiv);
+            }, 2000);
+        };
+
+    </script>
+
+</body>
+
+</html>

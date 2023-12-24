@@ -1,0 +1,36 @@
+footer {
+    background-color: #ece7f1;
+    padding: 20px 0;
+    color: #333;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#footer-content {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    margin-bottom: 10px;
+}
+
+h4.footer {
+    color: #222;
+}
+
+#subscribe-button {
+    padding: 8px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#footer-bottom {
+    margin-top: 20px;
+    color: #777;
+}

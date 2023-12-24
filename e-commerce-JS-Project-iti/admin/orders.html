@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../nav.css">
+    <link rel="stylesheet" href="../footer.css">
+    <title>Orders</title>
+    <style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+        }
+
+        .orderList {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 50px;
+        }
+
+        .order {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .order h3 {
+            color: #333;
+        }
+
+        .order p {
+            margin: 5px 0;
+        }
+
+        .order h4 {
+            margin-top: 15px;
+            color: #555;
+        }
+
+        .order ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .order li {
+            margin-bottom: 5px;
+        }
+
+        .order p strong {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .order hr {
+            margin: 15px 0;
+            border: 0;
+            border-top: 1px solid #ddd;
+        }
+
+        .order button {
+            margin-right: 10px;
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .order button.reject {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="adminDashboard.html"><img width="100px" height="70px" src="../images/logo.png" alt="Logo"></a>
+        <ul>
+            <li><a href="adminDashboard.html">Home</a></li>
+            <li><a class="active" href="#">Orders</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </div>
+
+    <div id="orderList">
+    </div>
+    <footer>
+        <div id="footer-content">
+            <div class="footer-section">
+                <h4 class="footer">JavaScript E-Commerce</h4>
+                <p>Shop with confidence | Secure Payment | Fast Shipping</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer">Stay Connected</h4>
+                <p>
+                    <a href="https://www.facebook.com"><i class="fa-brands fa-facebook fa-xl"></i></a> &#160
+                    <a href="https://www.x.com"><i class="fa-brands fa-twitter fa-xl"></i></a> &#160
+                    <a href="https://www.youtube.com"><i class="fa-brands fa-youtube fa-xl"></i></a> &#160
+                </p>
+            </div>
+        </div>
+
+        <div id="footer-bottom">
+            <p>&copy; 2023 ITI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logoutLink');
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace('../login-register/login.html');
+                history.pushState(null, null, '../login-register/login.html');
+            });
+        });
+        displayOrders();
+
+        function displayOrders() {
+            var orderListContainer = document.getElementById('orderList');
+            var orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+            orderListContainer.innerHTML = '';
+
+            var ordersHTML = '';
+
+            orders.forEach((order, index) => {
+                ordersHTML += `
+            <div class="order">
+                <h3>Order #${index + 1}</h3>
+                <p><strong>Name:</strong> ${order.customer.name}</p>
+                <p><strong>Address:</strong> ${order.customer.address}</p>
+                <p><strong>Email:</strong> ${order.customer.email}</p>
+                <h4>Order Items</h4>
+                <ul>
+                    ${order.items.map(item => `<li>${item.name} - Quantity: ${item.quantity} - Price: $${item.price.toFixed(2)}</li>`).join('')}
+                </ul>
+                <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+                ${order.isAccepted !== undefined
+                        ? `<p><strong>Status:</strong> ${order.isAccepted ? 'Approved' : 'Rejected'}</p>`
+                        : `
+                    <button onclick="approveOrder(${index})">Approve</button>
+                    <button class="reject" onclick="rejectOrder(${index})">Reject</button>`
+                    }
+                <hr>
+            </div>`;
+            });
+
+            orderListContainer.innerHTML = ordersHTML;
+        }
+
+        function approveOrder(index) {
+            updateOrderStatus(index, true);
+            displayOrders();
+        }
+
+        function rejectOrder(index) {
+            updateOrderStatus(index, false);
+            displayOrders();
+        }
+
+        function updateOrderStatus(index, isAccepted) {
+            var existingOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            existingOrders[index].isAccepted = isAccepted;
+            localStorage.setItem('orders', JSON.stringify(existingOrders));
+        }
+    </script>
+
+</body>
+
+</html>

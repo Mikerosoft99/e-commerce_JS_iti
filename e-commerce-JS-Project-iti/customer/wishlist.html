@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="customer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../footer.css">
+    <link rel="stylesheet" href="../nav.css">
+    <title>Wishlist</title>
+    <style>
+        #product-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        #product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .product-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .product-item img {
+            max-width: 100%;
+            max-height: 130px;
+            display: block;
+            margin: 0 auto;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .product-item img:hover {
+            transform: scale(1.1);
+        }
+
+        .product-item select {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .product-item button {
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+
+        }
+
+        .product-item button:hover {
+            background-color: #45a049;
+        }
+
+        .wishlist-icon {
+            font-size: 20px;
+            color: rgb(5, 4, 4);
+        }
+
+        #wishlistLink {
+            position: relative;
+        }
+
+        .feedback-message {
+            position: fixed;
+            top: 10%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            animation: fadeOut 2s ease-in-out;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        #emptyWishlist {
+            text-align: center;
+        }
+
+        #emptyMessage {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #emptyMessage p {
+            font-size: 50px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        #emptyWishlist img {
+            vertical-align: middle;
+        }
+
+        .shopping-link {
+            background-color: #3498db;
+            font-size: 20px;
+            color: #fff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+
+        }
+
+        .shopping-link:hover {
+            background-color: #1a5f8d;
+        }
+    </style>
+</head>
+
+
+
+<body>
+    <div class="navbar">
+        <a href="customerDashboard.html"><img width="100px" height="70px" src="../images/logo.png" alt="Logo"></a>
+        <ul>
+            <li><a href="customerDashboard.html">Home</a></li>
+            <li><a href="shoppingCart.html"><img src="../images/cart-black-icon.svg" width="25px" height="25px"
+                        alt="ShoppingCart"></a></li>
+            <li><a class="active" href="#" id="wishlistLink">Wishlist <i class="fa-solid fa-heart"></i><span
+                        id="wishlistCount"></span></a></li>
+            <li><a href="previousOrder.html">My Orders</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </div>
+    <div id="emptyWishlist" style="display: none">
+        <img width="40%" src="../images/empty-wishlist.png" alt="">
+        <div id="emptyMessage">
+            <p>Your wishlist is empty!</p>
+            <a href="customerDashboard.html" class="shopping-link">Start Shopping Now</a>
+        </div>
+    </div>
+
+    <div id="product-list" style="margin-top: 50px;">
+    </div>
+    <footer>
+        <div id="footer-content">
+            <div class="footer-section">
+                <h4 class="footer">JavaScript E-Commerce</h4>
+                <p>Shop with confidence | Secure Payment | Fast Shipping</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer">Stay Connected</h4>
+                <p>
+                    <a href="https://www.facebook.com"><i class="fa-brands fa-facebook fa-xl"></i></a> &#160
+                    <a href="https://www.x.com"><i class="fa-brands fa-twitter fa-xl"></i></a> &#160
+                    <a href="https://www.youtube.com"><i class="fa-brands fa-youtube fa-xl"></i></a> &#160
+                </p>
+            </div>
+        </div>
+
+        <div id="footer-bottom">
+            <p>&copy; 2023 ITI. All rights reserved.</p>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logoutLink');
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace('../login-register/login.html');
+                history.pushState(null, null, '../login-register/login.html');
+            });
+        });
+
+        var products = JSON.parse(localStorage.getItem('products')) || [];
+        var productsInWishlist = products.filter(product => product.inWishlist);
+
+        function displayProducts() {
+            var productList = document.getElementById('product-list');
+            var productsInWishlist = products.filter(product => product.inWishlist);
+            productList.innerHTML = '';
+
+            productsInWishlist.forEach(product => {
+                var productItem = document.createElement('div');
+                productItem.classList.add('product-item');
+
+                var imageElement = document.createElement('img');
+                imageElement.src = product.image;
+                imageElement.alt = product.name;
+
+                productItem.appendChild(imageElement);
+
+                productItem.innerHTML += `
+            <p>Name: ${product.name}</p>
+            <p>Category: ${product.category}</p>
+            <p>Price: ${product.price}</p>
+            <p>Description: ${product.description}</p>
+            <p>Quantity: ${product.quantity}</p>
+            <select id="quantity${product.id}" name="quantity">
+                ${generateQuantityOptions(product.quantity)}
+            </select>
+
+            <button onclick="addToCart(${product.id}, ${product.quantity})">Add to Cart</button>
+            
+            <span class="wishlist-icon" onclick="toggleWishlist(${product.id})">${product.inWishlist ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>'}</span>`;
+
+                productList.appendChild(productItem);
+            });
+        };
+
+        function generateQuantityOptions(maxQuantity) {
+            let options = '';
+            for (let i = 1; i <= maxQuantity; i++) {
+                options += `<option value="${i}">${i}</option>`;
+            }
+            return options;
+        }
+
+        function toggleWishlist(productId) {
+            var product = products.find(p => p.id === productId);
+            if (product) {
+                if (product.inWishlist) {
+                    removeFromWishlist(product);
+                } else {
+                    addToWishlist(product);
+                }
+
+                localStorage.setItem('products', JSON.stringify(products));
+                displayProducts();
+                checkEmptyWishlist()
+            }
+        };
+
+        function addToWishlist(product) {
+            product.inWishlist = true;
+        };
+
+        function removeFromWishlist(product) {
+            product.inWishlist = false;
+        };
+
+
+        function addToCart(productId, maxQuantity) {
+            var selectedQuantity = document.getElementById(`quantity${productId}`).value;
+
+            var selectedProduct = products.find(p => p.id === productId);
+
+            if (selectedProduct) {
+                var cartItem = {
+                    id: selectedProduct.id,
+                    image: selectedProduct.image,
+                    name: selectedProduct.name,
+                    price: selectedProduct.price,
+                    quantity: parseInt(selectedQuantity),
+                };
+
+                var cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+                var existingCartItemIndex = cartItems.findIndex(item => item.id === cartItem.id);
+
+                if (existingCartItemIndex !== -1) {
+                    cartItems[existingCartItemIndex].quantity += cartItem.quantity;
+                } else {
+                    cartItems.push(cartItem);
+                }
+
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                displayFeedback('Item added to cart!');
+            }
+        };
+
+        function checkEmptyWishlist() {
+            var emptyWishlistDiv = document.getElementById('emptyWishlist');
+            var productsInWishlist = products.filter(product => product.inWishlist);
+
+            if (productsInWishlist.length === 0) {
+                emptyWishlistDiv.style.display = 'block';
+            } else {
+                emptyWishlistDiv.style.display = 'none';
+            }
+        }
+
+        function displayFeedback(message) {
+            var feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-message';
+            feedbackDiv.textContent = message;
+
+            document.body.appendChild(feedbackDiv);
+
+            setTimeout(function () {
+                feedbackDiv.parentNode.removeChild(feedbackDiv);
+            }, 2000);
+        };
+
+        document.addEventListener('DOMContentLoaded', function () {
+            displayProducts();
+            checkEmptyWishlist();
+        });
+    </script>
+</body>
+
+</html>

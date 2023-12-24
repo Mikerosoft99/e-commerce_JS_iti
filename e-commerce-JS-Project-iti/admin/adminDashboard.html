@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../images/logo.png" type="image/x-icon" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="../nav.css">
+    <link rel="stylesheet" href="../footer.css">
+    <title>Admin DashBoard</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="adminDashboard.html"><img width="100px" height="70px" src="../images/logo.png" alt="Logo"></a>
+        <ul>
+            <li><a class="active" href="#">Home</a></li>
+            <li><a href="orders.html">Orders</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </div>
+    <h2>Admin Dashboard</h2>
+    <div id="admin-dashboard">
+        <h2>All Products</h2>
+        <button onclick="showAddProductForm()">Add Product</button>
+
+        <div id="add-product-form" style="display: none;">
+            <h3>Add New Product</h3>
+            <form id="product-form">
+                <label for="productName">Name:</label>
+                <input type="text" id="productName" required>
+                <label for="productImage">Image URL:</label>
+                <input type="text" id="productImage" required>
+                <label for="productCategory">Category:</label>
+                <input type="text" id="productCategory" required>
+                <label for="productPrice">Price:</label>
+                <input type="number" id="productPrice" required>
+                <label for="productDescription">Description:</label>
+                <textarea id="productDescription" required></textarea>
+                <label for="productQuantity">Quantity:</label>
+                <input type="number" id="productQuantity" required>
+                <button type="button" onclick="addProduct()">Add Product</button>
+                <button type="button" onclick="hideAddProductForm()">Cancel</button>
+            </form>
+        </div>
+
+        <table id="product-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th colspan="2">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="product-list">
+            </tbody>
+        </table>
+
+        <div id="edit-product-form" style="display: none;">
+            <h3>Edit Product</h3>
+            <form id="edit-product-form">
+                <label for="editProductName">Name:</label>
+                <input type="text" id="editProductName" required>
+                <label for="editProductImage">Image URL:</label>
+                <input type="text" id="editProductImage" required>
+                <label for="editProductCategory">Category:</label>
+                <input type="text" id="editProductCategory" required>
+                <label for="editProductPrice">Price:</label>
+                <input type="number" id="editProductPrice" required>
+                <label for="editProductDescription">Description:</label>
+                <textarea id="editProductDescription" required></textarea>
+                <label for="editProductQuantity">Quantity:</label>
+                <input type="number" id="editProductQuantity" required>
+                <button type="button" id="saveChangesButton">Save Changes</button>
+                <button type="button" onclick="hideEditProductForm()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    <footer>
+        <div id="footer-content">
+            <div class="footer-section">
+                <h4 class="footer">JavaScript E-Commerce</h4>
+                <p>Shop with confidence | Secure Payment | Fast Shipping</p>
+            </div>
+
+            <div class="footer-section">
+                <h4 class="footer">Stay Connected</h4>
+                <p>
+                    <a href="https://www.facebook.com"><i class="fa-brands fa-facebook fa-xl"></i></a> &#160
+                    <a href="https://www.x.com"><i class="fa-brands fa-twitter fa-xl"></i></a> &#160
+                    <a href="https://www.youtube.com"><i class="fa-brands fa-youtube fa-xl"></i></a> &#160
+                </p>
+            </div>
+        </div>
+
+        <div id="footer-bottom">
+            <p>&copy; 2023 ITI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutLink = document.getElementById('logoutLink');
+            logoutLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                window.location.replace('../login-register/login.html');
+                history.pushState(null, null, '../login-register/login.html');
+            });
+        });
+
+        var storedProducts = localStorage.getItem('products');
+        if (storedProducts) {
+            var products = JSON.parse(storedProducts);
+            displayProducts();
+        } else {
+            fetch("../products.json")
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (products) {
+                    localStorage.setItem('products', JSON.stringify(products));
+                    displayProducts();
+                });
+        };
+
+        function displayProducts() {
+            let products = JSON.parse(localStorage.getItem('products'));
+            let placeholder = document.getElementById('product-list');
+            let out = "";
+            for (let product of products) {
+                out += `
+            <tr>
+                <td class="imgCell"><img width="100%" height="60px" src="${product.image}"></td>
+                <td class="idCell">${product.id}</td>
+                <td class="nameCell">${product.name}</td>
+                <td class="cateCell">${product.category}</td>
+                <td class="priceCell">${product.price} $</td>
+                <td class="descCell">${product.description}</td>
+                <td class="quantityCell">${product.quantity}</td>
+                <td>
+                    <button onclick="editProduct(${product.id})" class="edit-button">Edit</button>
+                </td>
+                <td>
+                    <button onclick="deleteProduct(${product.id})" class="delete-button">Delete</button>
+                </td>
+            </tr>`;
+            }
+            placeholder.innerHTML = out;
+        }
+
+        var products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function showAddProductForm() {
+            document.getElementById('add-product-form').style.display = 'block';
+        }
+
+        function hideAddProductForm() {
+            document.getElementById('add-product-form').style.display = 'none';
+        }
+
+        function addProduct() {
+            var productName = document.getElementById('productName').value;
+            var productImage = document.getElementById('productImage').value;
+            var productCategory = document.getElementById('productCategory').value;
+            var productPrice = parseFloat(document.getElementById('productPrice').value);
+            var productDescription = document.getElementById('productDescription').value;
+            var productQuantity = parseInt(document.getElementById('productQuantity').value);
+
+            var newProduct = {
+                id: products.length + 1,
+                name: productName,
+                price: productPrice,
+                description: productDescription,
+                category: productCategory,
+                image: productImage,
+                quantity: productQuantity
+            };
+
+            products.push(newProduct);
+
+            document.getElementById('product-form').reset();
+
+            localStorage.setItem('products', JSON.stringify(products));
+        }
+
+        function goToSection() {
+            document.getElementById("edit-product-form").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function editProduct(productId) {
+            var productToEdit = products.find(product => product.id === productId);
+
+            showEditProductForm(productToEdit);
+            goToSection();
+        }
+
+        function showEditProductForm(product) {
+            document.getElementById('editProductName').value = product.name;
+            document.getElementById('editProductImage').value = product.image;
+            document.getElementById('editProductCategory').value = product.category;
+            document.getElementById('editProductPrice').value = product.price;
+            document.getElementById('editProductDescription').value = product.description;
+            document.getElementById('editProductQuantity').value = product.quantity;
+
+            document.getElementById('edit-product-form').style.display = 'block';
+
+            document.getElementById('saveChangesButton').addEventListener('click', function () {
+                saveChanges(product.id);
+            });
+        }
+
+        function saveChanges(productId) {
+            var index = products.findIndex(product => product.id === productId);
+
+            products[index].name = document.getElementById('editProductName').value;
+            products[index].image = document.getElementById('editProductImage').value;
+            products[index].category = document.getElementById('editProductCategory').value;
+            products[index].price = parseFloat(document.getElementById('editProductPrice').value);
+            products[index].description = document.getElementById('editProductDescription').value;
+            products[index].quantity = parseInt(document.getElementById('editProductQuantity').value);
+
+            document.getElementById('edit-product-form').style.display = 'none';
+
+            localStorage.setItem('products', JSON.stringify(products));
+            displayProducts();
+        }
+
+        function hideEditProductForm() {
+            document.getElementById('edit-product-form').style.display = 'none';
+        }
+
+        function deleteProduct(productId) {
+            var index = products.findIndex(product => product.id === productId);
+            var product = products[index];
+
+            // Ask for the quantity to delete
+            var quantityToDelete = prompt(`Enter the quantity to delete (current quantity is "${product.quantity}"):`);
+
+            if (quantityToDelete === null || quantityToDelete === "") { // user entered no value of clicked cancel
+                return;
+            }
+
+            quantityToDelete = parseInt(quantityToDelete);
+
+            if (!isNaN(quantityToDelete) && quantityToDelete > 0 && quantityToDelete <= product.quantity) {
+                // Reduce the quantity by the specified amount
+                product.quantity -= quantityToDelete;
+                if (product.quantity === 0) {
+                    products.splice(index, 1);
+                }
+            } else {
+                alert(`Invalid quantity. Please enter a valid number between 1 and ${product.quantity}.`);
+                return;
+            }
+
+            localStorage.setItem('products', JSON.stringify(products));
+            displayProducts();
+        };
+        displayProducts();
+    </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="login-register-style.css">
+  <title>Registration</title>
+  <link rel="icon" href="../images/logo.png" type="image/x-icon"/>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Registration</h2>
+    <form id="registrationForm">
+      <label>Username (First and Last Name):</label>
+      <input type="text" id="username" name="username" required>
+      <p id="usernameError" class="error"></p>
+
+      <label>Email:</label>
+      <input type="email" id="email" name="email" required>
+      <p id="emailError" class="error"></p>
+
+      <label>Password:</label>
+      <input type="password" id="password" name="password" required>
+      <p id="passwordError" class="error"></p>
+
+      <label>Repeat Password:</label>
+      <input type="password" id="repeatPassword" name="repeatPassword" required>
+      <p id="repeatPasswordError" class="error"></p>
+
+      <label for="userType">User Type:</label>
+      <select id="userType" name="userType">
+        <option value="admin">Admin</option>
+        <option value="customer">Customer</option>
+      </select>
+      <pre></pre>
+      <button type="submit">Register</button>
+    </form>
+    <br>
+    <a href="login.html">Already have an account?</a>
+  </div>
+
+  <script>
+    document.getElementById("registrationForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      var username = document.getElementById("username").value;
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      var repeatPassword = document.getElementById("repeatPassword").value;
+      var userType = document.getElementById("userType").value;
+
+      var usernameRegex = /^[a-zA-Z]{3,}( [a-zA-Z]{3,})*$/;
+      var mailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|net|edu|org)$/;
+      var passwordRegex = /^(?=.*[a-zA-Z]).{8,}$/;
+
+      var usernameError = document.getElementById("usernameError");
+      var emailError = document.getElementById("emailError");
+      var passwordError = document.getElementById("passwordError");
+      var repeatPasswordError = document.getElementById("repeatPasswordError");
+
+      usernameError.textContent = "";
+      emailError.textContent = "";
+      passwordError.textContent = "";
+      repeatPasswordError.textContent = "";
+
+      if (!usernameRegex.test(username)) {
+        usernameError.textContent = "Invalid username format.";
+      }
+
+      if (!mailRegex.test(email)) {
+        emailError.textContent = "Invalid email format.";
+      }
+
+      if (!passwordRegex.test(password)) {
+        passwordError.textContent = "Invalid password format. Password must be at least 8 characters.";
+      }
+
+      if (password !== repeatPassword) {
+        repeatPasswordError.textContent = "Password does't match.";
+      }
+
+      if (usernameError.textContent !== "" || emailError.textContent !== "" || passwordError.textContent !== "" || repeatPasswordError.textContent !== "") {
+        return;
+      }
+
+      var users = JSON.parse(localStorage.getItem("users")) || [];
+
+      var user = {
+        username: username,
+        email: email,
+        password: password,
+        userType: userType
+      };
+
+      users.push(user);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      document.getElementById("username").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("password").value = "";
+      document.getElementById("repeatPassword").value = "";
+      document.getElementById("userType").value = "admin";
+
+      alert("Registration successful!");
+
+      if (user.userType === "admin") {
+        window.location.href = "../admin/adminDashboard.html";
+      } else {
+        window.location.href = "../customer/customerDashboard.html";
+      }
+    });
+    
+  </script>
+</body>
+</html>
