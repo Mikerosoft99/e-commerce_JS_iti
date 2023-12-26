@@ -18,6 +18,10 @@ footer {
     margin-bottom: 10px;
 }
 
+.footer-section p a {
+    color: rgb(39, 35, 35);
+}
+
 h4.footer {
     color: #222;
 }
